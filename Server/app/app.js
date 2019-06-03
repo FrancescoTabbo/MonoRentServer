@@ -7,8 +7,8 @@ var MongoClient = require('mongodb').MongoClient;
 var Client = require('node-rest-client').Client;
 var client = new Client();
 
-/*app.set('views', './views');
-app.set('view engine', 'pug');*/
+app.set('views', './views');
+app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -66,17 +66,19 @@ app.post('/register', function(req, res){
 });
 
 app.get('/visualizza', function (req, res) {
+    console.log("uno");
     var args = {};
     client.get("https://3000-df7cac6b-cc76-41e1-a520-ee0ac7652c80.ws-eu0.gitpod.io/Visualizza", args, function (data, ress) {
+        console.log("due");
+        console.log({Mezzi: data})
         res.send({Mezzi: data});
     });
 });
 
-
 app.post('/segnala', function (req, res) {
     var args = {
         data: {
-            ID: req.body.Scooter,
+            idMezzo: req.body.Scooter,
             desc: req.body.tipo
             },
         headers: { "Content-Type": "application/json" }
@@ -86,42 +88,58 @@ app.post('/segnala', function (req, res) {
         console.log(data);
         if (data.n == 1){
             res.send([{message: 'OK'}]);
+            console.log("ok");
         }else{
             res.send([{message: 'KO'}]);
+            console.log("ko");
         }
     });
 });
 
 app.post('/takeOn', function (req, res) {
+    console.log("uno");
     var args = {
         data: {
-            IdMezzo: parseInt(req.query.Scooter),
+            id_:req.query.Scooter,
             },
         headers: { "Content-Type": "application/json" }
     };
     client.post("https://3000-df7cac6b-cc76-41e1-a520-ee0ac7652c80.ws-eu0.gitpod.io/TakeOn", args, function (data, ress) {
+        console.log("due");
         console.log(data);
-        if (data.n == 1)
+        if (data.n == 1){
             res.send([{message: 'OK'}]);
-        else
+            console.log("ok");
+        }else{
             res.send([{message: 'KO'}]);
+            console.log("ko");
+        }
     });
 });
 
 app.post('/takeOff', function (req, res) {
     var args = {
         data: {
-            IdMezzo: parseInt(req.query.Scooter),
+            id_:req.query.Scooter,
             },
         headers: { "Content-Type": "application/json" }
     };
     client.post("https://3000-df7cac6b-cc76-41e1-a520-ee0ac7652c80.ws-eu0.gitpod.io/TakeOff", args, function (data, ress) {
         console.log(data);
-        if (data.n == 1)
+        if (data.n == 1){
             res.send([{message: 'OK'}]);
-        else
+            console.log("ok");
+        }else{
             res.send([{message: 'KO'}]);
+            console.log("ko");
+        }
     });
+});
+
+app.use(function(req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 app.listen(3000, function(){});
