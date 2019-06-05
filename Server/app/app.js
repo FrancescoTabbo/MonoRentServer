@@ -12,6 +12,12 @@ app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(function(req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.post('/login', function(req, res){
     console.log("uno");
     console.log(req.body);
@@ -28,10 +34,17 @@ app.post('/login', function(req, res){
         console.log("due");
         if (err) throw err;
         console.log("Connected!");
-        conn.query("SELECT * FROM User WHERE user = '" + nickname + "' AND password ='" + password + "'" ,function(errr, fields){
+        conn.query("SELECT * FROM User WHERE user = '" + nickname + "' AND password ='" + password + "'" ,function(errr, result, fields){
             if (errr) throw errr;
             console.log("tre");
-            res.send(fields);
+            console.log(req.body);
+            console.log(req.query);
+            if(result.length != 0){
+                res.send({message: "OK", ID: result});
+
+            }else{
+                res.send({message: "errore!"});
+            }
         });
     });
 });
@@ -57,10 +70,17 @@ app.post('/register', function(req, res){
         console.log("due");
         if (err) throw err;
         console.log("Connected!");
-        conn.query("INSERT INTO User(nome, cognome, email, password, user, indirizzo, telefono) VALUES( '" + nome +"', '" + cognome + "', '" + email + "', '" + password + "', '" + nickname + "', '" + indirizzo + "', '" + telefono + "')"  ,function(errr, fields){
+        conn.query("INSERT INTO User(nome, cognome, email, password, user, indirizzo, telefono) VALUES( '" + nome +"', '" + cognome + "', '" + email + "', '" + password + "', '" + nickname + "', '" + indirizzo + "', '" + telefono + "')"  ,function(errr,result, fields){
             if (errr) throw errr;
             console.log("tre");
-            res.send(fields);
+            console.log(req.body);
+            console.log(req.query);
+            if(result.length != 0){
+                res.send({message: "OK", ID: result});
+
+            }else{
+                res.send({message: "errore!"});
+            }
         });
     });
 });
@@ -136,10 +156,5 @@ app.post('/takeOff', function (req, res) {
     });
 });
 
-app.use(function(req, res, next){
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
 
 app.listen(3000, function(){});
